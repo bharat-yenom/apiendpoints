@@ -181,6 +181,7 @@ vodex_token = "33021716-8bfb-42f4-a077-196b71f2d5a2"
 vodex_api_url = "https://api.vodex.ai/api/v1/trigger-call"
  
 def make_vodex_api_call(data,name, phoneNumber):
+    print("here")
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
@@ -198,6 +199,7 @@ def make_vodex_api_call(data,name, phoneNumber):
     recruiter_name = data.get('RecruiterName', 'Not specified')
     recruiter_phone = data.get('RecruiterPhoneNumber', 'Not specified')
     recruiter_email = data.get('RecruiterEmail', 'Not specified')
+    duration= data.get('Duration','it is fulltime job')
     print(name)
     print(recruiter_name)
  
@@ -207,7 +209,7 @@ def make_vodex_api_call(data,name, phoneNumber):
         "callList": [
             {
                 "firstName": "{}".format(name),
-                "lastName": "Sai",
+                "lastName": "",
                 "phone": "{}".format(phone_number),
                 "job_title": "{}".format(job_title),
                 "job_location": "{}".format(job_location),
@@ -218,6 +220,10 @@ def make_vodex_api_call(data,name, phoneNumber):
                 "recruiter_name": "{}".format(recruiter_name),
                 "recruiter_phone": "{}".format(recruiter_phone),
                 "recruiter_email": "{}".format(recruiter_email),
+                "duration": "{}".format(duration),
+                "lead_name":"{}",
+                "rules": "{}".format(rules),
+                "company_information": "{}".format(company_information),
                 }
             ]
     ,
@@ -226,6 +232,7 @@ def make_vodex_api_call(data,name, phoneNumber):
  
     response = requests.post(vodex_api_url, json=payload, headers=headers)
     response.raise_for_status()
+    print(response)
     return response.json()
  
 # def make_vocode_call(name,phone,data) :

@@ -204,7 +204,7 @@ def make_vodex_api_call(data,name, phoneNumber):
     print(recruiter_name)
  
     # project_id = data.get('projectId')
- 
+    result_string = lambda x: ', '.join(x)
     payload = {
         "callList": [
             {
@@ -216,12 +216,12 @@ def make_vodex_api_call(data,name, phoneNumber):
                 "hourly_rate": "{}".format(hourly_rate),
                 "job_type": "{}".format(job_type),
                 "remote": "{}".format(remote),
-                "required_skills": "{}".format(required_skills),
+                "required_skills": "{}".format(result_string(required_skills)),
                 "recruiter_name": "{}".format(recruiter_name),
                 "recruiter_phone": "{}".format(recruiter_phone),
                 "recruiter_email": "{}".format(recruiter_email),
                 "duration": "{}".format(duration),
-                "lead_name":"{}",
+                "lead_name":"{}".format(name),
                 "rules": "{}".format(rules),
                 "company_information": "{}".format(company_information),
                 }
@@ -232,7 +232,8 @@ def make_vodex_api_call(data,name, phoneNumber):
  
     response = requests.post(vodex_api_url, json=payload, headers=headers)
     response.raise_for_status()
-    print(response.json)
+    response_data = response.json()  # Get JSON response data
+    print(response_data)
     return response.json()
  
 # def make_vocode_call(name,phone,data) :

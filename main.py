@@ -232,7 +232,7 @@ def make_vodex_api_call(data,name, phoneNumber):
  
     response = requests.post(vodex_api_url, json=payload, headers=headers)
     response.raise_for_status()
-    print(response)
+    print(response.json)
     return response.json()
  
 # def make_vocode_call(name,phone,data) :

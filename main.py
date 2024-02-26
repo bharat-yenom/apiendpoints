@@ -200,6 +200,7 @@ def make_vodex_api_call(data,name, phoneNumber):
     recruiter_phone = data.get('RecruiterPhoneNumber', 'Not specified')
     recruiter_email = data.get('RecruiterEmail', 'Not specified')
     duration= data.get('Duration','it is fulltime job')
+    salary = data.get('Salary', 'Not specified')
     print(name)
     print(recruiter_name)
  
@@ -224,6 +225,7 @@ def make_vodex_api_call(data,name, phoneNumber):
                 "lead_name":"{}".format(name),
                 "rules": "{}".format(rules),
                 "company_information": "{}".format(company_information),
+                "salary": "{}".format(salary)
                 }
             ]
     ,

@@ -78,7 +78,7 @@ def quick_job_search(api_url, client_id, username, password, search_value, max_r
             # print("human_written_job_description",human_written_job_description)
             required_skills, desired_skills = extract_skills(human_written_job_description)
             # print("required_skills, desired_skills",required_skills, desired_skills)
-            return {"JobTitle": response_json[0]['job title'],"City": response_json[0]['city'],"State": response_json[0]['state'],"ZipCode": response_json[0]['zipcode'],"JobType": response_json[0]['job type'],"JobDescription": human_written_job_description,"required_skills": required_skills, "desired_skills": desired_skills}
+            return {"JobTitle": response_json[0]['job title'],"City": response_json[0]['city'],"State": response_json[0]['state'],"ZipCode": response_json[0]['zipcode'],"JobType": response_json[0]['job type'],"HourlyRate": response_json[0]['minimum rate'],"JobDescription": human_written_job_description,"required_skills": required_skills, "desired_skills": desired_skills}
             # return search_response.json()
         else:
             return {"error": "Failed to search jobs"}

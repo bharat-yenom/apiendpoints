@@ -386,8 +386,8 @@ def write_json_data():
                 make_synthflow_call(name,phone,custom_variables)
             # make_test_call(name,phone,custom_variables)
             # Write the JSON data to a file named 'campaign_data.json'
-            with open('campaign_data.json', 'w') as file:
-                json.dump(data, file)
+            # with open('campaign_data.json', 'w') as file:
+            #     json.dump(data, file)
            
  
             return jsonify({'status': 'success', 'response': 'Making Calls using Synthflow'})
@@ -405,8 +405,8 @@ def write_json_data():
                 response_data = make_vodex_api_call(data,name,phone)
             # make_test_call(name,phone,custom_variables)
             # Write the JSON data to a file named 'campaign_data.json'
-            with open('campaign_data.json', 'w') as file:
-                json.dump(data, file)
+            # with open('campaign_data.json', 'w') as file:
+            #     json.dump(data, file)
            
             return jsonify({'status': 'success', 'response': 'Making Calls using Vodex'})
         # if data["LLM"] == "Vocode" :

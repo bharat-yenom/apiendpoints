@@ -16,6 +16,37 @@ from JobDiva import quick_job_search
 load_dotenv()
 auth_token = os.environ.get("AUTH_TOKEN")
 dataJson={}
+
+from flask_sqlalchemy import SQLAlchemy
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://default:XC71SxrNuAvh@ep-frosty-flower-a4kfm17u.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require"
+ 
+db = SQLAlchemy(app)
+
+# Define the Rules model
+class Rule(db.Model):
+    __tablename__ = 'rules'
+   
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    rule_text = db.Column(db.Text, nullable=False)
+ 
+    def __repr__(self):
+        return f"<Rule id={self.id}, rule_text={self.rule_text}>"
+    
+# Define the Client model
+class Client(db.Model):
+    __tablename__ = 'clients'
+   
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    client_name = db.Column(db.Text, nullable=False)
+    client_data = db.Column(db.Text, nullable=False)
+ 
+    def __repr__(self):
+        return f"<Client id={self.id}, client_name={self.client_name}, client_data={self.client_data}>"
+
+    
+with app.app_context():
+    # Create the database tables
+    db.create_all()
  
 SYNTHFLOW_API_URL = "https://fine-tuner.ai/api/1.1/wf/v2_voice_agent_call"
  
@@ -349,7 +380,7 @@ def make_vodex_api_call(data,name, phoneNumber):
 #     )
 #     return ("Call created...",call.id)
  
- 
+new_fun= lambda s: s.replace(':', '-') 
 @app.route('/campaignRun', methods=['POST','OPTIONS'])
 @cross_origin()
 def write_json_data():
@@ -361,19 +392,21 @@ def write_json_data():
             custom_variables = [
                 "job_title: {}".format(data['JobTitle'] if 'JobTitle' in data else 'not specified'),
                 "job_location: {}, {}".format(data['City'] if 'City' in data else '_', data['State'] if 'State' in data else 'not specified'),
-            "hourly_rate: {}".format(data['HourlyRate'] if 'HourlyRate' in data else 'It is fulltime job'),
+            "hourly_rate: {}".format(data['HourlyRate'] if 'HourlyRate' in data else 'not specified'),
             "job_type:  {}".format(data['JobType'] if 'JobType' in data else 'not specified'),
             "remote_or_hybrid:  {}".format(data['RemoteHybrid'] if 'RemoteHybrid' in data else 'not specified'),
             "required_skills: {}".format(result_string(data['RequiredSkills']) if 'RequiredSkills' in data else 'not specified'),
             "duration: {}".format(data['Duration'] if 'Duration' in data else 'it is fulltime job'),
             "job_industry: {}".format(result_string(data['Industry']) if 'Industry' in data else 'not specified'),
-            "job_description: {}".format(data['JobDescription'] if 'JobDescription' in data else 'not specified'),
+            "job_description: {}".format(new_fun(data['JobDescription']) if 'JobDescription' in data else 'not specified'),
             "recruiter_name: {}".format(data['RecruiterName'] if 'RecruiterName' in data else 'not specified'),
             "recruiter_phone:  {}".format(data['RecruiterPhoneNumber'] if 'RecruiterPhoneNumber' in data else 'not specified'),
             "recruiter_email:  {}".format(data['RecruiterEmail'] if 'RecruiterEmail' in data else 'not specified'),
             "rules: {}".format(rules),
             "company_information: {}".format(company_information),
-            "salary: {}".format(data['Salary'] if 'Salary' in data else 'Not specified still'),];
+            "salary: {}".format(data['Salary'] if 'Salary' in data else 'Not specified'),
+            "client_details:  {}".format(new_fun(data['clientData']) if 'clientData' in data else 'client not disclosed'),
+            "client_name:  {}".format(data['clientName'] if 'clientName' in data else 'client not disclosed'), ]  
             for entry in data['csvFile']:
                 name = entry['Name']
                 phone = entry['Phone'].replace('-', '')
@@ -453,13 +486,15 @@ def test_campaign():
             "required_skills: {}".format(result_string(data['RequiredSkills']) if 'RequiredSkills' in data else 'not specified'),
             "duration: {}".format(data['Duration'] if 'Duration' in data else 'it is fulltime job'),
             "job_industry: {}".format(result_string(data['Industry']) if 'Industry' in data else 'not specified'),
-            "job_description: {}".format(data['JobDescription'] if 'JobDescription' in data else 'not specified'),
+            "job_description: {}".format(new_fun(data['JobDescription']) if 'JobDescription' in data else 'not specified'),
             "recruiter_name: {}".format(data['RecruiterName'] if 'RecruiterName' in data else 'not specified'),
             "recruiter_phone:  {}".format(data['RecruiterPhoneNumber'] if 'RecruiterPhoneNumber' in data else 'not specified'),
             "recruiter_email:  {}".format(data['RecruiterEmail'] if 'RecruiterEmail' in data else 'not specified'),
             "rules: {}".format(rules),
             "company_information: {}".format(company_information),
-            "salary: {}".format(data['Salary'] if 'Salary' in data else 'Not specified'),]      
+            "salary: {}".format(data['Salary'] if 'Salary' in data else 'Not specified'),
+            "client_details:  {}".format(new_fun(data['clientData']) if 'clientData' in data else 'client not disclosed'),
+            "client_name:  {}".format(data['clientName'] if 'clientName' in data else 'client not disclosed'), ]  
             print("custom_variables",custom_variables)
             make_synthflow_call(name,phone,custom_variables)
             print("I am here2")
@@ -603,6 +638,140 @@ def search_job():
     search_results = quick_job_search(api_url, client_id, username, password, search_value, max_returned)
     return jsonify(search_results)
 # print("Call created...", call.id)
+
+@app.route('/getRules', methods=['GET'])
+def get_rules():
+    try:
+        # Query the Rule table to fetch all rules
+        rules = Rule.query.all()
+ 
+        # Serialize the rules data into JSON format
+        rules_data = [{'id': rule.id, 'rule_text': rule.rule_text} for rule in rules]
+ 
+        # Return the rules data as the response
+        return jsonify({'status': 'success', 'rules': rules_data})
+    except Exception as e:
+        # Handle any exceptions
+        error_response = {'status': 'error', 'response': str(e)}
+        return jsonify(error_response), 500
+    
+
+@app.route('/editRules', methods=['POST', 'DELETE'])
+def manage_rules():
+    if request.method == 'POST':
+        # Add new rules
+        try:
+            data = request.get_json()
+            rule_texts = data.get('rule_texts')
+
+            if not rule_texts:
+                return jsonify({'status': 'error', 'message': 'Rule texts not provided'}), 400
+
+            # Create Rule objects for each rule text and add them to the database
+            for rule_text in rule_texts:
+                new_rule = Rule(rule_text=rule_text)
+                db.session.add(new_rule)
+            
+            db.session.commit()
+
+            return jsonify({'status': 'success', 'message': 'Rules added successfully'})
+        except Exception as e:
+            # Handle any exceptions
+            db.session.rollback()
+            error_response = {'status': 'error', 'message': str(e)}
+            return jsonify(error_response), 500
+    elif request.method == 'DELETE':
+        # Delete rules
+        try:
+            data = request.get_json()
+            rule_ids = data.get('rule_ids')
+
+            if not rule_ids:
+                return jsonify({'status': 'error', 'message': 'Rule IDs not provided'}), 400
+
+            # Delete rules based on the provided rule IDs
+            for rule_id in rule_ids:
+                rule = Rule.query.get(rule_id)
+                if rule:
+                    db.session.delete(rule)
+                else:
+                    return jsonify({'status': 'error', 'message': f'Rule with ID {rule_id} not found'}), 404
+            
+            db.session.commit()
+
+            return jsonify({'status': 'success', 'message': 'Rules deleted successfully'})
+        except Exception as e:
+            # Handle any exceptions
+            db.session.rollback()
+            error_response = {'status': 'error', 'message': str(e)}
+            return jsonify(error_response), 500
+        
+        
+        
+# Client Get
+
+@app.route('/getClients', methods=['GET'])
+def get_clients():
+    try:
+        # Query the Client table to fetch all clients
+        clients = Client.query.all()
+
+        # Serialize the clients data into JSON format
+        clients_data = [{'id': client.id, 'client_name': client.client_name, 'client_data': client.client_data} for client in clients]
+
+        # Return the clients data as the response
+        return jsonify({'status': 'success', 'clients': clients_data})
+    except Exception as e:
+        # Handle any exceptions
+        error_response = {'status': 'error', 'response': str(e)}
+        return jsonify(error_response), 500
+
+@app.route('/editClients', methods=['POST', 'DELETE'])
+def manage_clients():
+    if request.method == 'POST':
+        # Add a new client
+        try:
+            data = request.get_json()
+            client_name = data.get('client_name')
+            client_data = data.get('client_data')
+ 
+            if not client_name or not client_data:
+                return jsonify({'status': 'error', 'message': 'Client name or data not provided'}), 400
+ 
+            # Create a new Client object and add it to the database
+            new_client = Client(client_name=client_name, client_data=client_data)
+            db.session.add(new_client)
+            db.session.commit()
+ 
+            return jsonify({'status': 'success', 'message': 'Client added successfully'})
+        except Exception as e:
+            # Handle any exceptions
+            db.session.rollback()
+            error_response = {'status': 'error', 'message': str(e)}
+            return jsonify(error_response), 500
+    elif request.method == 'DELETE':
+        # Delete a client
+        try:
+            data = request.get_json()
+            client_id = data.get('client_id')
+ 
+            if not client_id:
+                return jsonify({'status': 'error', 'message': 'Client ID not provided'}), 400
+ 
+            # Query the database to find the client by ID and delete it
+            client = Client.query.get(client_id)
+            if client:
+                db.session.delete(client)
+                db.session.commit()
+                return jsonify({'status': 'success', 'message': 'Client deleted successfully'})
+            else:
+                return jsonify({'status': 'error', 'message': 'Client not found'}), 404
+        except Exception as e:
+            # Handle any exceptions
+            db.session.rollback()
+            error_response = {'status': 'error', 'message': str(e)}
+            return jsonify(error_response), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

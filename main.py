@@ -18,7 +18,7 @@ auth_token = os.environ.get("AUTH_TOKEN")
 dataJson={}
 
 from flask_sqlalchemy import SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://default:XC71SxrNuAvh@ep-frosty-flower-a4kfm17u.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require"
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("database")
  
 db = SQLAlchemy(app)
 

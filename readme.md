@@ -1,7 +1,56 @@
-# flask
+# Python Apiendpoints
 
-A minimal Flask web application.
+Make sure you have python installed in your machine
 
-For a step-by-step guide to deploying on [Railway](https://railway.app/?referralCode=alphasec), see [this](https://alphasec.io/how-to-deploy-a-python-flask-app-on-railway/) post, or click the button below.
+This is the flask api endpoints to be used with the front end, make sure to follow the steps to make it work.
+Make sure to install all the dependencies from the requirements.txt to start the testing, the frontend made for this app is simply a demo to see everythin is working
+We have made a react app to act as a frontend, just we have to change the url, in the frontend src/router/api.routes.js
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/igzwwg?referralCode=alphasec)
+### Backend Github URL
+
+```bash
+https://github.com/anshulbugs/gptVoiceFront/
+```
+
+## URL When Running Locally
+
+```bash
+http://127.0.0.1:5000/
+```
+## Hosted on vercel for the testing
+
+```bash
+https://apifinal.vercel.app/
+```
+
+## Setup 
+
+```bash
+git clone https://github.com/bharat-yenom/apiendpoints.git <your project name>
+```
+
+Rename `myapp.py` with an appropriate file name and update its contents. The `run_myapp` method was added to this file as a placeholder.
+
+### Setting Up a Virual Environment (optional)
+
+```bash
+pip install --upgrade virtualenv
+virtualenv -p python venv
+source venv/bin/activate
+```
+
+## Dependencies
+
+This section is for any dependencies that have been added using `pip`.
+
+Freeze list of dependencies:
+
+```bash
+pip freeze > requirements.txt
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```

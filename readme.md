@@ -29,8 +29,17 @@ https://apifinal.vercel.app/
 git clone https://github.com/bharat-yenom/apiendpoints.git <your project name>
 ```
 
-Rename `myapp.py` with an appropriate file name and update its contents. The `run_myapp` method was added to this file as a placeholder.
+Rename `main.py` with an appropriate file name and update its contents.
 
+#### After installing everything and setting up the env
+In the terminal or powershell for windows (in the root directory)
+```bash
+python main.py
+```
+In case of linux (in the root directory)
+```bash
+python3 main.py
+```
 ### Setting Up a Virual Environment (optional)
 
 ```bash

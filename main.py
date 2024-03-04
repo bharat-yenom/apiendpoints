@@ -26,6 +26,16 @@ class Rule(db.Model):
     def __repr__(self):
         return f"<Rule id={self.id}, rule_text={self.rule_text}>"
     
+class Company(db.Model):
+    __tablename__ = 'companies'
+   
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    company_name = db.Column(db.Text, nullable=False)
+    company_details = db.Column(db.Text, nullable=False)
+ 
+    def __repr__(self):
+        return f"<Company id={self.id}, company_name={self.company_name}>"
+    
 # Define the Client model
 class Client(db.Model):
     __tablename__ = 'clients'
@@ -36,6 +46,36 @@ class Client(db.Model):
  
     def __repr__(self):
         return f"<Client id={self.id}, client_name={self.client_name}, client_data={self.client_data}>"
+
+class Recruiter(db.Model):
+    __tablename__ = 'recruiters'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(100), nullable=False, unique=True)
+    phone = db.Column(db.String(20), nullable=False)
+    calendly_link = db.Column(db.String(200), nullable=False)
+    years_at_aptask = db.Column(db.Integer)
+    years_of_experience = db.Column(db.Integer)
+    hometown_city = db.Column(db.String(100))
+    hometown_state = db.Column(db.String(100))
+    hometown_country = db.Column(db.String(100))
+    current_city = db.Column(db.String(100))
+    current_state = db.Column(db.String(100))
+    current_country = db.Column(db.String(100))
+    languages_spoken = db.Column(db.String(200))
+    countries_traveled = db.Column(db.String(200))
+    linkedin_url = db.Column(db.String(200))
+    facebook_id = db.Column(db.String(100))
+    instagram_id = db.Column(db.String(100))
+    twitter_id = db.Column(db.String(100))
+    hobbies = db.Column(db.Text)
+    education = db.Column(db.Text)
+    gender = db.Column(db.String(10))  # Adding the gender field
+
+    def __repr__(self):
+        return f"<Recruiter id={self.id}, firstName={self.first_name}, lastName={self.last_name}, email={self.email}>"
 
     
 with app.app_context():
@@ -371,7 +411,72 @@ def manage_rules():
             error_response = {'status': 'error', 'message': str(e)}
             return jsonify(error_response), 500
         
-        
+# Company Get
+
+@app.route('/getCompanies', methods=['GET'])
+def get_companies():
+    try:
+        # Query the Company table to fetch all companies
+        companies = Company.query.all()
+ 
+        # Serialize the company data into JSON format
+        companies_data = [{'id': company.id, 'company_name': company.company_name, 'company_details': company.company_details} for company in companies]
+ 
+        # Return the company data as the response
+        return jsonify({'status': 'success', 'companies': companies_data})
+    except Exception as e:
+        # Handle any exceptions
+        error_response = {'status': 'error', 'response': str(e)}
+        return jsonify(error_response), 500
+
+
+@app.route('/editCompany', methods=['POST', 'DELETE'])
+def manage_company():
+    if request.method == 'POST':
+        # Add new company
+        try:
+            data = request.get_json()
+            company_name = data.get('company_name')
+            company_details = data.get('company_details')
+
+            if not company_name or not company_details:
+                return jsonify({'status': 'error', 'message': 'Company name or details not provided'}), 400
+
+            # Create a new Company object and add it to the database
+            new_company = Company(company_name=company_name, company_details=company_details)
+            db.session.add(new_company)
+            db.session.commit()
+
+            return jsonify({'status': 'success', 'message': 'Company added successfully'})
+        except Exception as e:
+            # Handle any exceptions
+            db.session.rollback()
+            error_response = {'status': 'error', 'message': str(e)}
+            return jsonify(error_response), 500
+    
+    elif request.method == 'DELETE':
+        # Delete company
+        try:
+            data = request.get_json()
+            company_id = data.get('company_id')
+
+            if not company_id:
+                return jsonify({'status': 'error', 'message': 'Company ID not provided'}), 400
+
+            # Query the Company table to find the company to delete
+            company = Company.query.get(company_id)
+            if company:
+                db.session.delete(company)
+                db.session.commit()
+                return jsonify({'status': 'success', 'message': 'Company deleted successfully'})
+            else:
+                return jsonify({'status': 'error', 'message': f'Company with ID {company_id} not found'}), 404
+        except Exception as e:
+            # Handle any exceptions
+            db.session.rollback()
+            error_response = {'status': 'error', 'message': str(e)}
+            return jsonify(error_response), 500
+
         
 # Client Get
 
@@ -436,6 +541,135 @@ def manage_clients():
             db.session.rollback()
             error_response = {'status': 'error', 'message': str(e)}
             return jsonify(error_response), 500
+        
+@app.route('/getRecruiters', methods=['GET'])
+def get_recruiters():
+    try:
+        # Query the Recruiter table to fetch all recruiters
+        recruiters = Recruiter.query.all()
+ 
+        # Serialize the recruiter data into JSON format
+        recruiters_data = [{
+            'id': recruiter.id,
+            'first_name': recruiter.first_name,
+            'last_name': recruiter.last_name,
+            'email': recruiter.email,
+            'phone': recruiter.phone,
+            'calendly_link': recruiter.calendly_link,
+            'years_at_aptask': recruiter.years_at_aptask,
+            'years_of_experience': recruiter.years_of_experience,
+            'hometown_city': recruiter.hometown_city,
+            'hometown_state': recruiter.hometown_state,
+            'hometown_country': recruiter.hometown_country,
+            'current_city': recruiter.current_city,
+            'current_state': recruiter.current_state,
+            'current_country': recruiter.current_country,
+            'languages_spoken': recruiter.languages_spoken,
+            'countries_traveled': recruiter.countries_traveled,
+            'linkedin_url': recruiter.linkedin_url,
+            'facebook_id': recruiter.facebook_id,
+            'instagram_id': recruiter.instagram_id,
+            'twitter_id': recruiter.twitter_id,
+            'hobbies': recruiter.hobbies,
+            'education': recruiter.education,
+            'gender': recruiter.gender  # Add gender to the response
+        } for recruiter in recruiters]
+ 
+        # Return the recruiter data as the response
+        return jsonify({'status': 'success', 'recruiters': recruiters_data})
+    except Exception as e:
+        # Handle any exceptions
+        error_response = {'status': 'error', 'response': str(e)}
+        return jsonify(error_response), 500
+    
+
+@app.route('/editRecruiter', methods=['POST', 'DELETE'])
+def manage_recruiter():
+    if request.method == 'POST':
+        # Add a new recruiter
+        try:
+            data = request.get_json()
+            first_name = data.get('first_name')
+            last_name = data.get('last_name')
+            email = data.get('email')
+            phone = data.get('phone')
+            calendly_link = data.get('calendly_link')
+            years_at_aptask = data.get('years_at_aptask')
+            years_of_experience = data.get('years_of_experience')
+            hometown_city = data.get('hometown_city')
+            hometown_state = data.get('hometown_state')
+            hometown_country = data.get('hometown_country')
+            current_city = data.get('current_city')
+            current_state = data.get('current_state')
+            current_country = data.get('current_country')
+            languages_spoken = data.get('languages_spoken')
+            countries_traveled = data.get('countries_traveled')
+            linkedin_url = data.get('linkedin_url')
+            facebook_id = data.get('facebook_id')
+            instagram_id = data.get('instagram_id')
+            twitter_id = data.get('twitter_id')
+            hobbies = data.get('hobbies')
+            education = data.get('education')
+            gender = data.get('gender')  # Added gender field
+
+            # Create a new Recruiter object and add it to the database
+            new_recruiter = Recruiter(
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                phone=phone,
+                calendly_link=calendly_link,
+                years_at_aptask=years_at_aptask,
+                years_of_experience=years_of_experience,
+                hometown_city=hometown_city,
+                hometown_state=hometown_state,
+                hometown_country=hometown_country,
+                current_city=current_city,
+                current_state=current_state,
+                current_country=current_country,
+                languages_spoken=languages_spoken,
+                countries_traveled=countries_traveled,
+                linkedin_url=linkedin_url,
+                facebook_id=facebook_id,
+                instagram_id=instagram_id,
+                twitter_id=twitter_id,
+                hobbies=hobbies,
+                education=education,
+                gender=gender  # Added gender field
+            )
+            db.session.add(new_recruiter)
+            db.session.commit()
+
+            return jsonify({'status': 'success', 'message': 'Recruiter added successfully'})
+        except Exception as e:
+            # Handle any exceptions
+            db.session.rollback()
+            error_response = {'status': 'error', 'message': str(e)}
+            return jsonify(error_response), 500
+    
+    elif request.method == 'DELETE':
+        # Delete a recruiter
+        try:
+            data = request.get_json()
+            recruiter_id = data.get('recruiter_id')
+
+            if not recruiter_id:
+                return jsonify({'status': 'error', 'message': 'Recruiter ID not provided'}), 400
+
+            # Query the database to find the recruiter by ID and delete it
+            recruiter = Recruiter.query.get(recruiter_id)
+            if recruiter:
+                db.session.delete(recruiter)
+                db.session.commit()
+                return jsonify({'status': 'success', 'message': 'Recruiter deleted successfully'})
+            else:
+                return jsonify({'status': 'error', 'message': 'Recruiter not found'}), 404
+        except Exception as e:
+            # Handle any exceptions
+            db.session.rollback()
+            error_response = {'status': 'error', 'message': str(e)}
+            return jsonify(error_response), 500
+
 
 @app.route('/api/call', methods=['POST'])
 def make_call():

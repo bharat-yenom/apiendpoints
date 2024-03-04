@@ -285,7 +285,7 @@ def test_campaign():
         error_response = {'status': 'error', 'response': str(e)}
         return jsonify(error_response)
    
-# From here we are running the job diva api to
+# From here we are running the job diva api to get the details.
 
 @app.route('/search', methods=['GET'])
 def search_job():

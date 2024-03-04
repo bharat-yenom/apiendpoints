@@ -433,7 +433,7 @@ def get_companies():
 @app.route('/editCompany', methods=['POST', 'DELETE'])
 def manage_company():
     if request.method == 'POST':
-        # Add new company
+        # Edit or Add new company
         try:
             data = request.get_json()
             company_name = data.get('company_name')
@@ -442,12 +442,20 @@ def manage_company():
             if not company_name or not company_details:
                 return jsonify({'status': 'error', 'message': 'Company name or details not provided'}), 400
 
-            # Create a new Company object and add it to the database
-            new_company = Company(company_name=company_name, company_details=company_details)
-            db.session.add(new_company)
-            db.session.commit()
+            # Query the Company table to find if the company already exists
+            existing_company = Company.query.filter_by(company_name=company_name).first()
 
-            return jsonify({'status': 'success', 'message': 'Company added successfully'})
+            if existing_company:
+                # Update existing company details
+                existing_company.company_details = company_details
+                db.session.commit()
+                return jsonify({'status': 'success', 'message': 'Company details updated successfully'})
+            else:
+                # Create a new Company object and add it to the database
+                new_company = Company(company_name=company_name, company_details=company_details)
+                db.session.add(new_company)
+                db.session.commit()
+                return jsonify({'status': 'success', 'message': 'New company added successfully'})
         except Exception as e:
             # Handle any exceptions
             db.session.rollback()
@@ -458,19 +466,19 @@ def manage_company():
         # Delete company
         try:
             data = request.get_json()
-            company_id = data.get('company_id')
+            company_name = data.get('company_name')
 
-            if not company_id:
-                return jsonify({'status': 'error', 'message': 'Company ID not provided'}), 400
+            if not company_name:
+                return jsonify({'status': 'error', 'message': 'Company name not provided'}), 400
 
             # Query the Company table to find the company to delete
-            company = Company.query.get(company_id)
+            company = Company.query.filter_by(company_name=company_name).first()
             if company:
                 db.session.delete(company)
                 db.session.commit()
                 return jsonify({'status': 'success', 'message': 'Company deleted successfully'})
             else:
-                return jsonify({'status': 'error', 'message': f'Company with ID {company_id} not found'}), 404
+                return jsonify({'status': 'error', 'message': f'Company with name {company_name} not found'}), 404
         except Exception as e:
             # Handle any exceptions
             db.session.rollback()

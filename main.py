@@ -130,7 +130,7 @@ def make_vodex_api_call(data,name, phoneNumber):
     recruiter_name = data.get('RecruiterName', 'Not specified')
     recruiter_phone = data.get('RecruiterPhoneNumber', 'Not specified')
     recruiter_email = data.get('RecruiterEmail', 'Not specified')
-    duration= data.get('Duration','it is fulltime job')
+    duration= data.get('Duration','Not specified')
     salary = data.get('Salary', 'Not specified')
     print(name)
     print(recruiter_name)
@@ -186,7 +186,7 @@ def write_json_data():
             "job_type:  {}".format(data['JobType'] if 'JobType' in data else 'not specified'),
             "remote_or_hybrid:  {}".format(data['RemoteHybrid'] if 'RemoteHybrid' in data else 'not specified'),
             "required_skills: {}".format(result_string(data['RequiredSkills']) if 'RequiredSkills' in data else 'not specified'),
-            "duration: {}".format(data['Duration'] if 'Duration' in data else 'it is fulltime job'),
+            "duration: {}".format(data['Duration'] if 'Duration' in data else 'not specified'),
             "job_industry: {}".format(result_string(data['Industry']) if 'Industry' in data else 'not specified'),
             "job_description: {}".format(new_fun(data['JobDescription']) if 'JobDescription' in data else 'not specified'),
             "recruiter_name: {}".format(data['RecruiterName'] if 'RecruiterName' in data else 'not specified'),
@@ -257,7 +257,7 @@ def test_campaign():
             "job_type:  {}".format(data['JobType'] if 'JobType' in data else 'not specified'),
             "remote_or_hybrid:  {}".format(data['RemoteHybrid'] if 'RemoteHybrid' in data else 'not specified'),
             "required_skills: {}".format(result_string(data['RequiredSkills']) if 'RequiredSkills' in data else 'not specified'),
-            "duration: {}".format(data['Duration'] if 'Duration' in data else 'it is fulltime job'),
+            "duration: {}".format(data['Duration'] if 'Duration' in data else 'not specified'),
             "job_industry: {}".format(result_string(data['Industry']) if 'Industry' in data else 'not specified'),
             "job_description: {}".format(new_fun(data['JobDescription']) if 'JobDescription' in data else 'not specified'),
             "recruiter_name: {}".format(data['RecruiterName'] if 'RecruiterName' in data else 'not specified'),

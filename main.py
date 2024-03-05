@@ -25,7 +25,8 @@ class Rule(db.Model):
  
     def __repr__(self):
         return f"<Rule id={self.id}, rule_text={self.rule_text}>"
-    
+
+# Define the Company model   
 class Company(db.Model):
     __tablename__ = 'companies'
    

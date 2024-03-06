@@ -138,7 +138,7 @@ def make_synthflow_call(name,phone,custom_variables):
 
 # This function is used to make the call using the vodex api
  
-vodex_token = os.environ.get("vodex")
+vodex_token = os.environ.get("vodex_token")
 vodex_api_url = "https://api.vodex.ai/api/v1/trigger-call"
  
 def make_vodex_api_call(data,name, phoneNumber):

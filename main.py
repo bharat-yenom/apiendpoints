@@ -294,7 +294,7 @@ def test_campaign():
             "recruiter_phone:  {}".format(data['RecruiterPhoneNumber'] if 'RecruiterPhoneNumber' in data else 'not specified'),
             "recruiter_email:  {}".format(data['RecruiterEmail'] if 'RecruiterEmail' in data else 'not specified'),
             "rules:  {}".format(data['rules'] if 'rules' in data else 'rules not added'),
-             "company_information:  {}".format(data['company_information'] if 'company_information' in data else 'company information not disclosed'),
+             "company_information:  {}".format(new_fun(data['company_information']) if 'company_information' in data else 'company information not disclosed'),
             "salary: {}".format(data['Salary'] if 'Salary' in data else 'Not specified'),
             "client_details:  {}".format(new_fun(data['clientData']) if 'clientData' in data else 'client not disclosed'),
             "client_name:  {}".format(data['clientName'] if 'clientName' in data else 'client not disclosed'), ]  
